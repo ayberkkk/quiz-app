@@ -1,9 +1,10 @@
-import "./App.css";
+import React from 'react';
+import Question from './components/Question';
 
 function App() {
   return (
-    <div>
-      <h1 class="text-3xl font-bold underline">Quiz App</h1>
+    <div className="container mx-auto mt-4">
+      <Question />
     </div>
   );
 }
