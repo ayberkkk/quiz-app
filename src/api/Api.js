@@ -1,4 +1,4 @@
-const API_KEY = 'VER8bCi7Z2p4eJ8mVDI96ZlqmhZDZV3EIQF7gIeV';
+const API_KEY = "VER8bCi7Z2p4eJ8mVDI96ZlqmhZDZV3EIQF7gIeV";
 
 export const getQuestions = async () => {
   try {
@@ -12,12 +12,12 @@ export const getQuestions = async () => {
       return {
         question: question.question,
         options: options,
-        correct_answer: question.correct_answers[0]?.answer,
+        correct_answer: question.correct_answer,
       };
     });
 
     return formattedQuestions;
   } catch (error) {
-    throw new Error('Failed to fetch questions');
+    throw new Error("Failed to fetch questions");
   }
 };
