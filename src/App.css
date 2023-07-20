@@ -1,3 +1,33 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+#root {
+    background: rgb(31, 34, 48);
+    background: linear-gradient(0deg, rgba(31, 34, 48, 1) 47%, rgba(44, 105, 141, 1) 100%);
+}
+
+
+.question-box {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
+}
+
+.question-answer {
+    background: rgba(255, 255, 255, 0.07);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
+}
+
+.question-answer.selected-correct {
+    background-color: #34d399;
+}
+
+.question-answer.selected-incorrect {
+    background-color: #ef4444;
+}
