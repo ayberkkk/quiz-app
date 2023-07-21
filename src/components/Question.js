@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { getQuestions } from "../api/Api";
 import Result from "./Result";
+import Timer from "./Timer";
 
 const Question = () => {
   const [questions, setQuestions] = useState([]);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedOption, setSelectedOption] = useState("");
   const [correctAnswers, setCorrectAnswers] = useState(0);
-
+  
   useEffect(() => {
     fetchQuestions();
   }, []);
@@ -15,11 +16,7 @@ const Question = () => {
   const fetchQuestions = async () => {
     try {
       const response = await getQuestions();
-      const formattedQuestions = response.map((question) => ({
-        ...question,
-        options: question.options.filter(Boolean),
-      }));
-      setQuestions(formattedQuestions);
+      setQuestions(response);
     } catch (error) {
       console.log("Fetch Questions Error:", error);
     }
@@ -42,12 +39,15 @@ const Question = () => {
     setTimeout(
       () => {
         setSelectedOption("");
-        setTimeout(() => {
-          setCurrentQuestion((prevCurrentQuestion) => prevCurrentQuestion + 1);
-        }, 500);
+        setCurrentQuestion((prevCurrentQuestion) => prevCurrentQuestion + 1);
       },
-      isCorrect ? 1500 : 0
-    );
+      isCorrect ? 1000 : 2000
+    ); // Show the correct answer for 1 second, otherwise wait for 2 seconds before moving to the next question
+  };
+
+  const handleRestartQuiz = () => {
+    setCurrentQuestion(0);
+    setCorrectAnswers(0);
   };
 
   if (questions.length === 0) {
@@ -79,32 +79,42 @@ const Question = () => {
       <Result
         correctAnswers={correctAnswers}
         totalQuestions={questions.length}
-        questions={questions}
+        onRestartQuiz={handleRestartQuiz}
       />
     );
   }
 
   const currentQuestionData = questions[currentQuestion];
+  const options = [...currentQuestionData.incorrect_answers];
+  const correctAnswerIndex = Math.floor(Math.random() * 4);
+  options.splice(correctAnswerIndex, 0, currentQuestionData.correct_answer);
 
   return (
     <div className="flex justify-center items-center h-screen">
       <div className="max-w-lg w-full p-4 bg-white rounded-lg shadow-md question-box mx-3 my-3">
-        <div className="text-right mt-2">
-          <span className="question-counter text-lg font-normal text-white">
-            {`${currentQuestion + 1} `} /
-          </span>
-          <span className="total-question text-2xl font-medium opacity-50 text-white">
-            {" "}
-            {`${questions.length}`}
-          </span>
+        <div className="grid grid-cols-12 gap-4">
+          <div className="col-span-9 flex items-center justify-center">
+            <div className="w-full">
+              <Timer className="question-box mx-3" />
+            </div>
+          </div>
+          <div className="col-span-3 question-box text-center mt-2 mx-3">
+            <span className="question-counter text-lg font-normal text-white">
+              {`${currentQuestion + 1} `} /
+            </span>
+            <span className="total-question text-2xl font-medium opacity-50 text-white">
+              {`${questions.length}`}
+            </span>
+          </div>
         </div>
+
         <h2 className="text-xl font-bold mb-4 text-white">
           {currentQuestionData.question}
         </h2>
         <div className="grid grid-cols-2 gap-4">
-          {currentQuestionData.options.map((option) => (
+          {options.map((option, index) => (
             <button
-              key={option}
+              key={index}
               className={`p-4 rounded-md w-full text-white outline-none question-answer ${
                 selectedOption === option
                   ? option === currentQuestionData.correct_answer
