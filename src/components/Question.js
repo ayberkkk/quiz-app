@@ -8,7 +8,8 @@ const Question = () => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedOption, setSelectedOption] = useState("");
   const [correctAnswers, setCorrectAnswers] = useState(0);
-  
+  const [isAnswerSubmitted, setIsAnswerSubmitted] = useState(false);
+
   useEffect(() => {
     fetchQuestions();
   }, []);
@@ -23,7 +24,7 @@ const Question = () => {
   };
 
   const handleOptionClick = (option) => {
-    if (selectedOption !== "") {
+    if (isAnswerSubmitted) {
       return;
     }
 
@@ -35,14 +36,16 @@ const Question = () => {
     }
 
     setSelectedOption(option);
+    setIsAnswerSubmitted(true);
 
     setTimeout(
       () => {
         setSelectedOption("");
+        setIsAnswerSubmitted(false);
         setCurrentQuestion((prevCurrentQuestion) => prevCurrentQuestion + 1);
       },
       isCorrect ? 1000 : 2000
-    ); // Show the correct answer for 1 second, otherwise wait for 2 seconds before moving to the next question
+    );
   };
 
   const handleRestartQuiz = () => {
@@ -84,43 +87,53 @@ const Question = () => {
     );
   }
 
+  const shuffleOptions = (options) => {
+    for (let i = options.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [options[i], options[j]] = [options[j], options[i]];
+    }
+    return options;
+  };
+
   const currentQuestionData = questions[currentQuestion];
-  const options = [...currentQuestionData.incorrect_answers];
-  const correctAnswerIndex = Math.floor(Math.random() * 4);
-  options.splice(correctAnswerIndex, 0, currentQuestionData.correct_answer);
+  const options = [
+    ...currentQuestionData.incorrect_answers,
+    currentQuestionData.correct_answer,
+  ];
+  const shuffledOptions = shuffleOptions(options);
 
   return (
     <div className="flex justify-center items-center h-screen">
       <div className="max-w-lg w-full p-4 bg-white rounded-lg shadow-md question-box mx-3 my-3">
-        <div className="grid grid-cols-12 gap-4">
+        <div className="grid grid-cols-12 gap-4 mb-4">
           <div className="col-span-9 flex items-center justify-center">
             <div className="w-full">
               <Timer className="question-box mx-3" />
             </div>
           </div>
-          <div className="col-span-3 question-box text-center mt-2 mx-3">
-            <span className="question-counter text-lg font-normal text-white">
-              {`${currentQuestion + 1} `} /
-            </span>
-            <span className="total-question text-2xl font-medium opacity-50 text-white">
-              {`${questions.length}`}
-            </span>
+          <div className="col-span-3 counter-box text-center mt-2 mx-3">
+            <div className="sm:p-4 lg:p-1">
+              <span className="question-counter text-base font-normal text-white">
+                {`${currentQuestion + 1} `} /
+              </span>
+              <span className="total-question text-xl font-medium opacity-50 text-white">
+                {`${questions.length}`}
+              </span>
+            </div>
           </div>
         </div>
-
         <h2 className="text-xl font-bold mb-4 text-white">
           {currentQuestionData.question}
         </h2>
         <div className="grid grid-cols-2 gap-4">
-          {options.map((option, index) => (
+          {shuffledOptions.map((option, index) => (
             <button
               key={index}
               className={`p-4 rounded-md w-full text-white outline-none question-answer ${
-                selectedOption === option
-                  ? option === currentQuestionData.correct_answer
-                    ? "selected-correct"
-                    : "selected-incorrect"
-                  : ""
+                selectedOption === option &&
+                (option === currentQuestionData.correct_answer
+                  ? "selected-correct"
+                  : "selected-incorrect")
               }`}
               onClick={() => handleOptionClick(option)}
             >

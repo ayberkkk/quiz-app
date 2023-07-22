@@ -85,9 +85,9 @@ const Result = ({ correctAnswers, totalQuestions, onRestartQuiz }) => {
 
   return (
       <div className="flex justify-center items-center h-screen">
-        <div className="question-box p-10">
+        <div className="question-box p-10 mx-3 my-3">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
-            <div className="md:col-span-3 rounded-full w-28 h-28 flex items-center justify-center border-2 border-gray-100 grade-box">
+            <div className="md:col-span-3 rounded-full w-28 h-28 flex items-center m-auto justify-center border-2 border-gray-100 grade-box">
               <p className={`text-5xl font-bold ${className}`}>{`${grade}`}</p>
             </div>
             <div className="md:col-span-9 flex items-center justify-center text-white">
